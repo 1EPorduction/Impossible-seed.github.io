@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>داستان‌های من</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>داستان‌های هفتگی</h1>
+    <p>اینجا داستان‌های من منتشر می‌شوند</p>
+  </header>
+
+  <main>
+    <!-- بخش داستان‌های خودت -->
+    <section id="my-stories">
+      <article>
+        <h2>داستان اول</h2>
+        <p>اینجا متن داستان اول شما قرار می‌گیرد...</p>
+      </article>
+    </section>
+
+    <!-- بخش ارسال داستان از طرف مخاطب -->
+    <section id="submit-story">
+      <h2>ارسال داستان شما</h2>
+      <form action="https://formspree.io/f/yourFormId" method="POST">
+        <label>نام:</label>
+        <input type="text" name="name" required>
+
+        <label>ایمیل:</label>
+        <input type="email" name="_replyto" required>
+
+        <label>متن داستان:</label>
+        <textarea name="message" required></textarea>
+
+        <button type="submit">ارسال</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
