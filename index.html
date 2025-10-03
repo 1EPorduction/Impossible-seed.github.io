@@ -1,172 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Impossible Seed</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Orbitron', monospace; background:#111; color:#fff; line-height:1.6; overflow:hidden; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impossible Seed</title>
 
-  header { text-align:center; padding:40px 20px; }
-  header h1 { font-size:2.5rem; color:#00ff88; margin-bottom:10px; }
-  header p { font-size:1.2rem; color:#ccc; }
+  <!-- فونت تکنولوژی -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
-  .lang-switcher {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    display:flex;
-    gap:10px;
-  }
-  .lang-switcher button {
-    border:none; border-radius:6px; cursor:pointer; background:rgba(0,255,136,0.8);
-    display:flex; align-items:center; justify-content:center; padding:4px;
-  }
-  .lang-switcher button img { width:30px; height:auto; }
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Orbitron', monospace; background:#111; color:#fff; line-height:1.6; overflow-x:hidden; }
 
-  main { max-width:1000px; margin:auto; padding:20px; }
+    header { text-align:center; padding:40px 20px; }
+    header h1 { font-size:2.5rem; color:#00ff88; margin-bottom:10px; }
+    header p { font-size:1.2rem; color:#ccc; }
 
-  #my-stories { display:flex; flex-direction:column; gap:30px; margin-bottom:50px; }
-  article { background:rgba(0,0,0,0.7); padding:25px; border-radius:12px; box-shadow:0 4px 15px rgba(0,255,136,0.3); max-height:500px; overflow-y:auto; }
-  article h2 { margin-bottom:15px; font-size:1.8rem; color:#00ff88; }
-  article p { font-size:1rem; color:#eee; white-space: pre-line; }
+    /* دکمه‌های زبان با پرچم، بالا سمت راست */
+    .lang-switcher {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 10px;
+    }
+    .lang-switcher button {
+      font-size: 1.2rem;
+      padding: 6px 10px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      background:rgba(0,255,136,0.8);
+      color:#111;
+      transition:0.3s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .lang-switcher button:hover { background:rgba(0,204,102,0.9); }
+    .lang-switcher button img { width:30px; height:auto; vertical-align: middle; }
 
-  #submit-story { background:rgba(0,0,0,0.7); padding:25px; border-radius:12px; box-shadow:0 4px 15px rgba(0,255,136,0.3); margin-bottom:50px; }
-  #submit-story h2 { margin-bottom:20px; font-size:1.6rem; text-align:center; color:#00ff88; }
-  form { display:flex; flex-direction:column; gap:15px; }
-  form label { font-weight:600; margin-bottom:5px; }
-  form input, form textarea { padding:12px; border-radius:8px; border:none; font-size:1rem; width:100%; }
-  form textarea { min-height:120px; resize:vertical; }
-  form button { padding:14px; background:#00ff88; color:#111; border:none; border-radius:8px; font-size:1.1rem; cursor:pointer; font-weight:600; transition:0.3s; }
-  form button:hover { background:#00cc66; }
+    main { max-width:1000px; margin:auto; padding:20px; }
 
-  canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
-</style>
+    /* داستان */
+    #my-stories { display:flex; flex-direction:column; gap:30px; margin-bottom:50px; }
+    article { background:rgba(0,0,0,0.7); padding:25px; border-radius:12px; box-shadow:0 4px 15px rgba(0,255,136,0.3); }
+    article h2 { margin-bottom:15px; font-size:1.8rem; color:#00ff88; }
+    article p { font-size:1rem; color:#eee; white-space: pre-line; }
+
+    /* فرم */
+    #submit-story { background:rgba(0,0,0,0.7); padding:25px; border-radius:12px; box-shadow:0 4px 15px rgba(0,255,136,0.3); margin-bottom:50px; }
+    #submit-story h2 { margin-bottom:20px; font-size:1.6rem; text-align:center; color:#00ff88; }
+    form { display:flex; flex-direction:column; gap:15px; }
+    form label { font-weight:600; margin-bottom:5px; }
+    form input, form textarea { padding:12px; border-radius:8px; border:none; font-size:1rem; width:100%; }
+    form textarea { min-height:120px; resize:vertical; }
+    form button { padding:14px; background:#00ff88; color:#111; border:none; border-radius:8px; font-size:1.1rem; cursor:pointer; font-weight:600; transition:0.3s; }
+    form button:hover { background:#00cc66; }
+
+    /* ریسپانسیو */
+    @media(max-width:768px){ article h2 { font-size:1.5rem; } form button { font-size:1rem; } }
+
+    /* پس‌زمینه سه‌بعدی */
+    #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
+  </style>
 </head>
 <body>
-<canvas id="bgCanvas"></canvas>
+  <!-- پس‌زمینه سه‌بعدی -->
+  <canvas id="bgCanvas"></canvas>
 
-<header>
-  <h1 id="site-title"></h1>
-  <p id="site-subtitle"></p>
-</header>
+  <header>
+    <h1 id="site-title"></h1>
+    <p id="site-subtitle"></p>
+  </header>
 
-<div class="lang-switcher">
-  <button onclick="setLang('en')"><img src="https://flagcdn.com/gb.svg" alt="UK"></button>
-  <button onclick="setLang('fa')"><img src="https://flagofiran.com/files/Flag_of_Iran_simplified.svg" alt="Iran"></button>
-  <button onclick="setLang('de')"><img src="https://flagcdn.com/de.svg" alt="Germany"></button>
-</div>
+  <div class="lang-switcher">
+    <button onclick="setLang('en')"><img src="https://flagcdn.com/gb.svg" alt="UK"></button>
+    <button onclick="setLang('fa')"><img src="https://flagofiran.com/files/Flag_of_Iran_simplified.svg" alt="Iran"></button>
+    <button onclick="setLang('de')"><img src="https://flagcdn.com/de.svg" alt="Germany"></button>
+  </div>
 
-<main>
-  <section id="my-stories">
-    <article>
-      <h2 id="story1-title"></h2>
-      <p id="story1-text"></p>
-    </article>
-  </section>
+  <main>
+    <section id="my-stories">
+      <article>
+        <h2 id="story1-title"></h2>
+        <p id="story1-text"></p>
+      </article>
+    </section>
 
-  <section id="submit-story">
-    <h2 id="form-title"></h2>
-    <form id="story-form" action="https://formspree.io/f/xvgwgjag" method="POST">
-      <label id="label-name"></label>
-      <input type="text" name="name" required>
-      <label id="label-message"></label>
-      <textarea name="message" required></textarea>
-      <button type="submit" id="submit-btn"></button>
-    </form>
-  </section>
-</main>
+    <section id="submit-story">
+      <h2 id="form-title"></h2>
+      <form id="story-form" action="https://formspree.io/f/xvgwgjag" method="POST">
+        <label id="label-name"></label>
+        <input type="text" name="name" required>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-<script>
-  // پس‌زمینه سه‌بعدی
-  const canvas = document.getElementById('bgCanvas');
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha:true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
+        <label id="label-message"></label>
+        <textarea name="message" required></textarea>
 
-  const particleCount = 300;
-  const geometry = new THREE.BufferGeometry();
-  const positions = new Float32Array(particleCount*3);
-  for(let i=0;i<particleCount*3;i++) positions[i]=(Math.random()-0.5)*50;
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
-  const material = new THREE.PointsMaterial({ color:0x00ff88, size:0.15 });
-  const particles = new THREE.Points(geometry, material);
-  scene.add(particles);
+        <button type="submit" id="submit-btn"></button>
+      </form>
+    </section>
+  </main>
 
-  camera.position.z = 15;
-
-  function animate(){ requestAnimationFrame(animate); particles.rotation.y += 0.001; particles.rotation.x +=0.0005; renderer.render(scene,camera);}
-  animate();
-  window.addEventListener('resize', ()=>{
-    camera.aspect = window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
+  <!-- Three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+  <script>
+    // پس‌زمینه سه‌بعدی ساده (ذرات)
+    const canvas = document.getElementById('bgCanvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha:true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-  });
+    renderer.setPixelRatio(window.devicePixelRatio);
 
-  // متون سه زبانه
-  const translations = {
-    en:{
-      siteTitle:"Impossible Seed",
-      siteSubtitle:"Read the story of the Impossible Seed",
-      story1Title:"The Impossible Seed",
-      story1Text:`Operation One – The Struggle with Mathematics
-I begin at the point where all connections intersect. Relationships, like the threads of a tangled ball of yarn, weave everything together...
+    const particleCount = 300;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount*3);
+    for(let i=0;i<particleCount*3;i++){ positions[i] = (Math.random()-0.5)*50; }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
+    const material = new THREE.PointsMaterial({ color:0x00ff88, size:0.15 });
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    camera.position.z = 15;
+
+    function animate(){ requestAnimationFrame(animate); particles.rotation.y += 0.001; particles.rotation.x +=0.0005; renderer.render(scene,camera); }
+    animate();
+    window.addEventListener('resize', ()=>{
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // متن‌ها و سه زبان
+    const translations = {
+      en:{
+        siteTitle:"Impossible Seed",
+        siteSubtitle:"Read the story of the Impossible Seed",
+        story1Title:"The Impossible Seed",
+        story1Text:`Operation One – The Struggle with Mathematics
+I begin at the point where all connections intersect. Relationships, like the threads of a tangled ball of yarn, weave everything together. If you follow one of these threads, you move from the bird that sings in the morning and wakes me up, straight into infinity; everything is linked in an endless chain.
+...
 “And from this moment forward, the mantle of the Savior passes to us all...”
 Respectfully,
 Dr. Michael David Khalili`,
-      formTitle:"If you were the savior, what would you try to save?",
-      name:"Your Name:",
-      message:"Your Answer:",
-      submit:"Submit"
-    },
-    fa:{
-      siteTitle:"دانهٔ محال",
-      siteSubtitle:"داستان دانهٔ محال را بخوانید",
-      story1Title:"دانهٔ محال",
-      story1Text:`عملیات یک – کشمکش با ریاضیات
-من از نقطه‌ای شروع می‌کنم که تمام پیوندها در هم تنیده می‌شوند...
-«و از این لحظه به بعد، ردای ناجی بر دوش همهٔ ما خواهد بود...»
-با احترام،
-دکتر مایکل داوود خلیلی`,
-      formTitle:"اگر شما ناجی بودید، چه چیزی را نجات می‌دادید؟",
-      name:"نام شما:",
-      message:"جواب شما:",
-      submit:"ارسال"
-    },
-    de:{
-      siteTitle:"Der unmögliche Samen",
-      siteSubtitle:"Lesen Sie die Geschichte des Unmöglichen Samens",
-      story1Title:"Der unmögliche Samen",
-      story1Text:`Operation Eins – Der Kampf mit der Mathematik
-Ich beginne an dem Punkt, an dem alle Verbindungen zusammenlaufen...
-„Und von diesem Augenblick an geht der Mantel des Retters auf uns alle über...“
-Mit größtem Respekt,
-Dr. Michael David Khalili`,
-      formTitle:"Wenn Sie der Retter wären, was würden Sie retten?",
-      name:"Ihr Name:",
-      message:"Ihre Antwort:",
-      submit:"Senden"
+        formTitle:"If you were the savior, what would you try to save?",
+        name:"Your Name:",
+        message:"Your Answer:",
+        submit:"Submit"
+      },
+      fa:{
+        siteTitle:"دانه غیرممکن",
+        siteSubtitle:"داستان دانه غیرممکن را بخوانید",
+        story1Title:"دانه غیرممکن",
+        story1Text:`...متن داستان به فارسی بعداً قرار داده می‌شود...`,
+        formTitle:"اگر شما ناجی بودید، چه چیزی را نجات می‌دادید؟",
+        name:"نام شما:",
+        message:"جواب شما:",
+        submit:"ارسال"
+      },
+      de:{
+        siteTitle:"Unmöglicher Samen",
+        siteSubtitle:"Lesen Sie die Geschichte des Unmöglichen Samens",
+        story1Title:"Der Unmögliche Samen",
+        story1Text:`...Text auf Deutsch später...`,
+        formTitle:"Wenn Sie der Retter wären, was würden Sie retten?",
+        name:"Ihr Name:",
+        message:"Ihre Antwort:",
+        submit:"Senden"
+      }
+    };
+
+    function setLang(lang){
+      document.getElementById("site-title").innerText = translations[lang].siteTitle;
+      document.getElementById("site-subtitle").innerText = translations[lang].siteSubtitle;
+      document.getElementById("story1-title").innerText = translations[lang].story1Title;
+      document.getElementById("story1-text").innerText = translations[lang].story1Text;
+      document.getElementById("form-title").innerText = translations[lang].formTitle;
+      document.getElementById("label-name").innerText = translations[lang].name;
+      document.getElementById("label-message").innerText = translations[lang].message;
+      document.getElementById("submit-btn").innerText = translations[lang].submit;
     }
-  };
 
-  function setLang(lang){
-    document.getElementById("site-title").innerText = translations[lang].siteTitle;
-    document.getElementById("site-subtitle").innerText = translations[lang].siteSubtitle;
-    document.getElementById("story1-title").innerText = translations[lang].story1Title;
-    document.getElementById("story1-text").innerText = translations[lang].story1Text;
-    document.getElementById("form-title").innerText = translations[lang].formTitle;
-    document.getElementById("label-name").innerText = translations[lang].name;
-    document.getElementById("label-message").innerText = translations[lang].message;
-    document.getElementById("submit-btn").innerText = translations[lang].submit;
-  }
-
-  setLang('en');
-</script>
+    setLang('en'); // زبان پیش‌فرض انگلیسی
+  </script>
 </body>
 </html>
