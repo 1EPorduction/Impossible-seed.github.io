@@ -13,7 +13,7 @@
     background-color: #0d0d0d;
     color: #f0f0f0;
     line-height: 1.6;
-    overflow: hidden;
+    overflow: hidden; /* صفحه ثابت */
   }
 
   header {
@@ -71,8 +71,8 @@
 
   /* Box for scrollable text */
   #story {
-    max-height: 500px;
-    overflow-y: auto;
+    max-height: 500px; /* ارتفاع ثابت باکس */
+    overflow-y: auto;  /* فعال کردن اسکرول */
     padding: 20px;
     background: rgba(0,0,0,0.6);
     border-radius: 10px;
@@ -162,7 +162,16 @@
 
 <main>
   <h1 id="title">Impossible Seed</h1>
-  <div id="story"></div>
+  <div id="story">
+    <h2>Sample Text Box</h2>
+    <p>This is a placeholder text. You can add your content here. The box is scrollable while the page remains fixed.</p>
+    <p>Keep adding paragraphs to test scrolling inside this box.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+    <p>More sample text...</p>
+    <p>More sample text...</p>
+    <p>More sample text...</p>
+    <p>More sample text...</p>
+  </div>
 
   <form id="contact-form" action="https://formspree.io/f/xvgwgjag" method="POST">
     <label>
@@ -205,35 +214,17 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  // Translations (replace ... with full text)
+  // Language switch sample text
   const translations = {
-    en:{
-      title:"Impossible Seed",
-      story:`<h2>Operation One – The Struggle with Mathematics</h2>
-<p>I begin at the point where all connections intersect. Relationships, like the threads of a tangled ball of yarn, weave everything together...</p>
-<p>(Insert the full English text here)</p>`
-    },
-    fa:{
-      title:"دانهٔ محال",
-      story:`<h2>عملیات اول – درگیری با ریاضیات</h2>
-<p>از نقطه‌ای شروع می‌کنم که <strong>پیوند همهٔ انجمن‌ها</strong> در آن تلاقی دارد. به واسطهٔ این هماهنگی، توانستم <strong>دانه‌ای</strong> در آزمایشگاه درست کنم؛ دانه‌ای که با آن می‌توانستم به <strong>کد دعا</strong> دست پیدا کنم...</p>
-<p>(اینجا متن کامل فارسی قرار دهید)</p>`
-    },
-    de:{
-      title:"Der unmögliche Samen",
-      story:`<h2>Operation Eins – Der Kampf mit der Mathematik</h2>
-<p>Ich beginne an dem Punkt, an dem alle Verbindungen zusammenlaufen. Durch diese Harmonie gelang es mir, <strong>einen Samen</strong> im Labor zu erschaffen...</p>
-<p>(Hier den vollständigen deutschen Text einfügen)</p>`
-    }
+    en:{title:"Impossible Seed", story:"<h2>Sample Text Box</h2><p>This is a placeholder text in English. Scroll inside this box.</p>"},
+    fa:{title:"دانهٔ محال", story:"<h2>نمونه متن</h2><p>این متن نمونه به فارسی است. داخل باکس اسکرول کنید.</p>"},
+    de:{title:"Der unmögliche Samen", story:"<h2>Beispieltext</h2><p>Dies ist ein Platzhaltertext auf Deutsch. Scrollen Sie innerhalb dieses Feldes.</p>"}
   };
 
-  // Language switch
   function setLanguage(lang){
     document.getElementById("title").innerHTML = translations[lang].title;
     document.getElementById("story").innerHTML = translations[lang].story;
-    document.querySelectorAll('.lang-selector img').forEach(img=>{
-      img.classList.remove('active');
-    });
+    document.querySelectorAll('.lang-selector img').forEach(img=> img.classList.remove('active'));
     document.getElementById(lang).classList.add('active');
   }
 
@@ -241,7 +232,6 @@
     img.addEventListener('click', ()=> setLanguage(img.id));
   });
 
-  // Initial language
   setLanguage('en');
 
 </script>
