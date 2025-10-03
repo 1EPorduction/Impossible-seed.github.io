@@ -4,17 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Impossible Seed</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- فونت تکنولوژی -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:"Segoe UI", Tahoma, sans-serif; background:#111; color:#fff; line-height:1.6; overflow-x:hidden; }
+    body { font-family: 'Orbitron', monospace; background:#111; color:#fff; line-height:1.6; overflow-x:hidden; }
+
     header { text-align:center; padding:40px 20px; }
     header h1 { font-size:2.5rem; color:#00ff88; margin-bottom:10px; }
     header p { font-size:1.2rem; color:#ccc; }
 
-    .lang-switcher { text-align:center; margin:20px 0; }
-    .lang-switcher button { margin:0 5px; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; background:#00ff88; color:#111; font-weight:600; transition:0.3s; }
-    .lang-switcher button:hover { background:#00cc66; }
+    /* دکمه‌های زبان با پرچم، بالا سمت راست */
+    .lang-switcher {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 10px;
+    }
+    .lang-switcher button {
+      font-size: 1.2rem;
+      padding: 6px 10px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      background:rgba(0,255,136,0.8);
+      color:#111;
+      transition:0.3s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .lang-switcher button:hover { background:rgba(0,204,102,0.9); }
+    .lang-switcher button img { width:30px; height:auto; vertical-align: middle; }
 
     main { max-width:1000px; margin:auto; padding:20px; }
 
@@ -51,9 +76,9 @@
   </header>
 
   <div class="lang-switcher">
-    <button onclick="setLang('en')">English</button>
-    <button onclick="setLang('fa')">فارسی</button>
-    <button onclick="setLang('de')">Deutsch</button>
+    <button onclick="setLang('en')"><img src="https://flagcdn.com/gb.svg" alt="UK"></button>
+    <button onclick="setLang('fa')"><img src="iran_shir_khorshid.svg" alt="Iran"></button>
+    <button onclick="setLang('de')"><img src="https://flagcdn.com/de.svg" alt="Germany"></button>
   </div>
 
   <main>
