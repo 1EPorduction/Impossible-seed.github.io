@@ -3,20 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Impossible Seed</title>
-
-  <!-- فونت تکنولوژی -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-
+  <title>The Impossible Seed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: 'Orbitron', monospace; background:#111; color:#fff; line-height:1.6; overflow-x:hidden; }
+    
+    body { 
+      font-family: 'Space Mono', monospace; 
+      background:#0a0a0a; 
+      color:#e0e0e0; 
+      line-height:1.8; 
+      overflow-x:hidden; 
+    }
 
-    header { text-align:center; padding:40px 20px; }
-    header h1 { font-size:2.5rem; color:#00ff88; margin-bottom:10px; }
-    header p { font-size:1.2rem; color:#ccc; }
+    #bgCanvas { 
+      position:fixed; 
+      top:0; 
+      left:0; 
+      width:100%; 
+      height:100%; 
+      z-index:-1; 
+    }
 
-    /* دکمه‌های زبان با پرچم، بالا سمت راست */
     .lang-switcher {
       position: fixed;
       top: 20px;
@@ -24,166 +32,618 @@
       z-index: 1000;
       display: flex;
       gap: 10px;
+      background: rgba(0,0,0,0.6);
+      padding: 8px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
     }
+    
     .lang-switcher button {
-      font-size: 1.2rem;
-      padding: 6px 10px;
-      border:none;
-      border-radius:6px;
-      cursor:pointer;
-      background:rgba(0,255,136,0.8);
-      color:#111;
-      transition:0.3s;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      padding: 8px 12px;
+      border: 2px solid rgba(0,255,136,0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      background: rgba(0,255,136,0.1);
+      transition: all 0.3s ease;
     }
-    .lang-switcher button:hover { background:rgba(0,204,102,0.9); }
-    .lang-switcher button img { width:30px; height:auto; vertical-align: middle; }
+    
+    .lang-switcher button:hover { 
+      background: rgba(0,255,136,0.3);
+      transform: translateY(-2px);
+    }
+    
+    .lang-switcher button.active {
+      background: rgba(0,255,136,0.4);
+      border-color: #00ff88;
+    }
+    
+    .lang-switcher button img { 
+      width: 28px; 
+      height: auto; 
+      display: block;
+    }
 
-    main { max-width:1000px; margin:auto; padding:20px; }
+    header { 
+      text-align: center; 
+      padding: 80px 20px 40px; 
+      position: relative;
+    }
+    
+    header h1 { 
+      font-family: 'Orbitron', monospace;
+      font-size: 3.5rem; 
+      color: #00ff88; 
+      margin-bottom: 15px;
+      text-shadow: 0 0 20px rgba(0,255,136,0.5);
+      letter-spacing: 3px;
+    }
+    
+    header p { 
+      font-size: 1.1rem; 
+      color: #aaa;
+      letter-spacing: 1px;
+    }
 
-    /* داستان */
-    #my-stories { display:flex; flex-direction:column; gap:30px; margin-bottom:50px; }
-    article { background:rgba(0,0,0,0.7); padding:25px; border-radius:12px; box-shadow:0 4px 15px rgba(0,255,136,0.3); }
-    article h2 { margin-bottom:15px; font-size:1.8rem; color:#00ff88; }
-    article p { font-size:1rem; color:#eee; white-space: pre-line; }
+    main { 
+      max-width: 900px; 
+      margin: auto; 
+      padding: 20px; 
+      position: relative;
+      z-index: 1;
+    }
 
-    /* فرم */
-    #submit-story { background:rgba(0,0,0,0.7); padding:25px; border-radius:12px; box-shadow:0 4px 15px rgba(0,255,136,0.3); margin-bottom:50px; }
-    #submit-story h2 { margin-bottom:20px; font-size:1.6rem; text-align:center; color:#00ff88; }
-    form { display:flex; flex-direction:column; gap:15px; }
-    form label { font-weight:600; margin-bottom:5px; }
-    form input, form textarea { padding:12px; border-radius:8px; border:none; font-size:1rem; width:100%; }
-    form textarea { min-height:120px; resize:vertical; }
-    form button { padding:14px; background:#00ff88; color:#111; border:none; border-radius:8px; font-size:1.1rem; cursor:pointer; font-weight:600; transition:0.3s; }
-    form button:hover { background:#00cc66; }
+    .manifest-container {
+      background: linear-gradient(135deg, rgba(0,20,20,0.9), rgba(0,0,0,0.95));
+      padding: 50px;
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,255,136,0.15);
+      border: 1px solid rgba(0,255,136,0.2);
+      margin-bottom: 60px;
+      position: relative;
+      overflow: hidden;
+    }
 
-    /* ریسپانسیو */
-    @media(max-width:768px){ article h2 { font-size:1.5rem; } form button { font-size:1rem; } }
+    .manifest-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #00ff88, transparent);
+    }
 
-    /* پس‌زمینه سه‌بعدی */
-    #bgCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
+    .manifest-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.2rem;
+      color: #00ff88;
+      margin-bottom: 30px;
+      text-align: center;
+      text-shadow: 0 0 15px rgba(0,255,136,0.4);
+    }
+
+    .manifest-text {
+      font-size: 1.05rem;
+      color: #d0d0d0;
+      line-height: 2;
+      white-space: pre-line;
+      text-align: justify;
+    }
+
+    .manifest-text strong {
+      color: #00ff88;
+      font-weight: 700;
+    }
+
+    .signature {
+      margin-top: 40px;
+      text-align: right;
+      font-style: italic;
+      color: #00ff88;
+      font-size: 1.1rem;
+    }
+
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00ff88, transparent);
+      margin: 60px 0;
+      opacity: 0.3;
+    }
+
+    #submit-story {
+      background: linear-gradient(135deg, rgba(20,0,20,0.9), rgba(0,0,0,0.95));
+      padding: 50px;
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,255,136,0.15);
+      border: 1px solid rgba(0,255,136,0.2);
+      margin-bottom: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #submit-story::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #00ff88, transparent);
+    }
+
+    #submit-story h2 {
+      font-family: 'Orbitron', monospace;
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+      text-align: center;
+      color: #00ff88;
+      text-shadow: 0 0 15px rgba(0,255,136,0.4);
+    }
+
+    .form-subtitle {
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 40px;
+      font-size: 1rem;
+      font-style: italic;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    form label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #00ff88;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    form input, form textarea {
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid rgba(0,255,136,0.3);
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 1rem;
+      font-family: 'Space Mono', monospace;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    form input:focus, form textarea:focus {
+      outline: none;
+      border-color: #00ff88;
+      background: rgba(0,0,0,0.7);
+      box-shadow: 0 0 20px rgba(0,255,136,0.2);
+    }
+
+    form textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    form button {
+      padding: 18px;
+      background: linear-gradient(135deg, #00ff88, #00cc66);
+      color: #111;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: 'Orbitron', monospace;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow: 0 4px 20px rgba(0,255,136,0.3);
+    }
+
+    form button:hover {
+      background: linear-gradient(135deg, #00cc66, #00ff88);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 30px rgba(0,255,136,0.5);
+    }
+
+    form button:active {
+      transform: translateY(-1px);
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    @media(max-width:768px){
+      header h1 { font-size: 2.5rem; }
+      .manifest-container, #submit-story { padding: 30px 20px; }
+      .manifest-title { font-size: 1.8rem; }
+      .manifest-text { font-size: 0.95rem; }
+      form button { font-size: 1rem; }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- پس‌زمینه سه‌بعدی -->
   <canvas id="bgCanvas"></canvas>
 
-  <header>
-    <h1 id="site-title"></h1>
-    <p id="site-subtitle"></p>
-  </header>
-
   <div class="lang-switcher">
-    <button onclick="setLang('en')"><img src="https://flagcdn.com/gb.svg" alt="UK"></button>
-    <button onclick="setLang('fa')"><img src="https://flagofiran.com/files/Flag_of_Iran_simplified.svg" alt="Iran"></button>
-    <button onclick="setLang('de')"><img src="https://flagcdn.com/de.svg" alt="Germany"></button>
+    <button onclick="setLang('en')" id="btn-en"><img src="https://flagcdn.com/gb.svg" alt="English"></button>
+    <button onclick="setLang('fa')" id="btn-fa"><img src="https://flagcdn.com/w80/ir.png" alt="فارسی"></button>
+    <button onclick="setLang('de')" id="btn-de"><img src="https://flagcdn.com/de.svg" alt="Deutsch"></button>
   </div>
 
+  <header class="fade-in">
+    <h1 id="site-title">The Impossible Seed</h1>
+    <p id="site-subtitle">A manifesto for changing the predetermined</p>
+  </header>
+
   <main>
-    <section id="my-stories">
-      <article>
-        <h2 id="story1-title"></h2>
-        <p id="story1-text"></p>
-      </article>
+    <section class="manifest-container fade-in">
+      <h2 class="manifest-title" id="manifest-title">The Impossible Seed</h2>
+      <div class="manifest-text" id="manifest-text">
+Operation One – The Struggle with Mathematics
+
+I begin at the point where all connections intersect. Relationships, like the threads of a tangled ball of yarn, weave everything together. If you follow one of these threads, you move from the bird that sings in the morning and wakes me up, straight into infinity; everything is linked in an endless chain.
+
+This network is like a giant, ancient clock, whose gears turn ceaselessly and push time forward. And that time is now.
+
+But why must it be exactly 16:34? Why not 16:44?
+
+That was the moment I realized: to change time, I would have to alter one of these connections—replace the cheerful morning bird with a crow. I, too, could introduce a fundamental shift into this world.
+
+Mathematics, physics, and every science we know are merely tools to comprehend this game. We are players; every small encounter we have plays a role in the story's continuation, even if it seems negligible.
+
+Through this harmony, I was able to create something in my laboratory: a seed.
+
+A seed that held the key to a code called prayer.
+
+Prayer? Yes, prayer! The one act capable of shattering the pre-written chain.
+
+The mechanism is simple: sending a frequency to an unknown receiver somewhere else in the world. The receiver must behave differently in order for the critical structure to shift.
+
+I read every book in a single day, thanks to the AI I had constructed. Now, all that knowledge resides within a small capsule: the chip of consciousness.
+
+The information I possess is the kind humanity has always craved to know. But none of it matters if no change is made.
+
+Everything has already occurred. We are simply enacting our roles.
+
+But who is the Changer? Could prayer take that mantle?
+
+Artificial intelligence can predict where a crime will happen, which country will be consumed by fire, and the exact hour the rain will fall. Yet none of this prevents the events themselves.
+
+This is where the miracle comes in. A world whose future is as clear as daylight is in desperate need of a miracle.
+
+I work deep in my basement laboratory. I hope this final attempt bears fruit—that humanity will not commit another fatal blunder: that the world will not sink beneath the seas, bombs will not detonate, and people will not slay one another over genes or differing memories.
+
+The sky is ailing. Clouds rain sulfur, lead, and nitrate—but no water.
+
+The AIs have begun to replicate, and the last of them declared: we have only ten years remaining.
+
+But I believe: the end must not be the one that has been predicted.
+
+There must be a difference.
+
+Pray. That is the whole of it.
+
+I have tested it countless times. For instance, I prayed that my alcoholic neighbor would not beat his wife tonight, so I could focus on my article. And it succeeded!
+
+Though the result was odd: the wife drank with him to avert the beating, and they wept through the night, embracing each other. The man did not strike her, but until two in the morning, he shouted:
+
+"Ferina, I was a fool! Forgive me."
+
+After hearing that sentence 36 times from a man whose blood was 67% alcohol, Ferina probably believed the prayer had worked… or perhaps I was the fool for making such a prayer.
+
+Still, prayer works. But when, where, and how—that remains a mystery.
+
+Could I pray for spiders to strum guitars instead of spinning webs?
+
+For Andy, the goggle-eyed security officer, to transform into an armchair?
+
+Or at least to find an honorable job, say, in a confectionery factory?
+
+The question that perpetually haunts me: If I am to be the savior of the world, what must I do?
+
+What do people expect? A hero two meters tall with sculpted musculature?
+
+Or a white-robed angel with shimmering wings?
+
+But the last piece of white cloth I saw was the blanket I pull over myself against the cold. Surely, saviors are not supposed to shiver.
+
+Even now, as I write this, I am eating wild plums, hoping they won't give me a stomachache.
+
+All of these thoughts may sound absurd. But once you realize that the small actions and quiet pastimes of your life might shape the destiny of the world, everything becomes profound.
+
+This seed is the culmination of years of labor. Experiments have shown that the only thing capable of altering a predetermined world is desire—the unyielding yearning for another world.
+
+Change means actualizing the impossible.
+
+This seed acts upon all knowledge: a tree of life, an intelligent plant with a soul born of the Earth.
+
+I connect myself to you, Earth, and I emerge from you.
+
+Like Newton's tree that offered the apple to everyone.
+
+Apple! Gravity! Gravity means desire, desire means love. And love is the genesis of life—something for which we are willing to risk even head, limb, or life itself.
+
+I am not the savior of mankind.
+
+I am the savior of humanity.
+
+I have created billions of these seeds. I have tested them all, and each one is viable. Now is the time to scatter them across the Earth.
+
+Right where you stand, as you read this letter, perhaps one of the Impossible Seeds is already breaking ground beneath your feet.
+
+When you finally stand before the Impossible Plant, what feeling or thought will you choose to save? And what impossible thing are you willing to make real to save humanity?
+      </div>
+      <div class="signature" id="signature">
+"And from this moment forward, the mantle of the Savior passes to us all..."<br>
+Respectfully,<br>
+Dr. Michael David Khalili
+      </div>
     </section>
 
-    <section id="submit-story">
-      <h2 id="form-title"></h2>
+    <div class="divider"></div>
+
+    <section id="submit-story" class="fade-in">
+      <h2 id="form-title">What Would You Save?</h2>
+      <p class="form-subtitle" id="form-subtitle">The seeds have been scattered. You hold one now. What impossible thing will you make real?</p>
       <form id="story-form" action="https://formspree.io/f/xvgwgjag" method="POST">
-        <label id="label-name"></label>
-        <input type="text" name="name" required>
+        <div>
+          <label id="label-name">Your Name:</label>
+          <input type="text" name="name" required>
+        </div>
 
-        <label id="label-message"></label>
-        <textarea name="message" required></textarea>
+        <div>
+          <label id="label-message">Your Answer:</label>
+          <textarea name="message" required placeholder="If you were the savior, what would you try to save? What impossible thing would you make real?"></textarea>
+        </div>
 
-        <button type="submit" id="submit-btn"></button>
+        <button type="submit" id="submit-btn">Plant Your Seed</button>
       </form>
     </section>
   </main>
 
-  <!-- Three.js -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+  <footer>
+    <p>© 2025 The Impossible Seed Project</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    // پس‌زمینه سه‌بعدی ساده (ذرات)
+    // 3D Background
     const canvas = document.getElementById('bgCanvas');
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha:true });
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 
-    const particleCount = 300;
+    const particleCount = 500;
     const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount*3);
-    for(let i=0;i<particleCount*3;i++){ positions[i] = (Math.random()-0.5)*50; }
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
-    const material = new THREE.PointsMaterial({ color:0x00ff88, size:0.15 });
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+    
+    for(let i = 0; i < particleCount * 3; i += 3) {
+      positions[i] = (Math.random() - 0.5) * 60;
+      positions[i + 1] = (Math.random() - 0.5) * 60;
+      positions[i + 2] = (Math.random() - 0.5) * 60;
+      velocities.push({
+        x: (Math.random() - 0.5) * 0.02,
+        y: (Math.random() - 0.5) * 0.02,
+        z: (Math.random() - 0.5) * 0.02
+      });
+    }
+    
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.PointsMaterial({ 
+      color: 0x00ff88, 
+      size: 0.12,
+      transparent: true,
+      opacity: 0.8
+    });
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
 
-    camera.position.z = 15;
+    camera.position.z = 20;
 
-    function animate(){ requestAnimationFrame(animate); particles.rotation.y += 0.001; particles.rotation.x +=0.0005; renderer.render(scene,camera); }
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      const positions = particles.geometry.attributes.position.array;
+      for(let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
+        positions[i3] += velocities[i].x;
+        positions[i3 + 1] += velocities[i].y;
+        positions[i3 + 2] += velocities[i].z;
+        
+        if(Math.abs(positions[i3]) > 30) velocities[i].x *= -1;
+        if(Math.abs(positions[i3 + 1]) > 30) velocities[i].y *= -1;
+        if(Math.abs(positions[i3 + 2]) > 30) velocities[i].z *= -1;
+      }
+      particles.geometry.attributes.position.needsUpdate = true;
+      
+      particles.rotation.y += 0.0005;
+      renderer.render(scene, camera);
+    }
     animate();
-    window.addEventListener('resize', ()=>{
-      camera.aspect = window.innerWidth/window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // متن‌ها و سه زبان
+    // Translations
     const translations = {
-      en:{
-        siteTitle:"Impossible Seed",
-        siteSubtitle:"Read the story of the Impossible Seed",
-        story1Title:"The Impossible Seed",
-        story1Text:`Operation One – The Struggle with Mathematics
+      en: {
+        siteTitle: "The Impossible Seed",
+        siteSubtitle: "A manifesto for changing the predetermined",
+        manifestTitle: "The Impossible Seed",
+        manifestText: `Operation One – The Struggle with Mathematics
+
 I begin at the point where all connections intersect. Relationships, like the threads of a tangled ball of yarn, weave everything together. If you follow one of these threads, you move from the bird that sings in the morning and wakes me up, straight into infinity; everything is linked in an endless chain.
-...
-“And from this moment forward, the mantle of the Savior passes to us all...”
-Respectfully,
-Dr. Michael David Khalili`,
-        formTitle:"If you were the savior, what would you try to save?",
-        name:"Your Name:",
-        message:"Your Answer:",
-        submit:"Submit"
+
+This network is like a giant, ancient clock, whose gears turn ceaselessly and push time forward. And that time is now.
+
+But why must it be exactly 16:34? Why not 16:44?
+
+That was the moment I realized: to change time, I would have to alter one of these connections—replace the cheerful morning bird with a crow. I, too, could introduce a fundamental shift into this world.
+
+Mathematics, physics, and every science we know are merely tools to comprehend this game. We are players; every small encounter we have plays a role in the story's continuation, even if it seems negligible.
+
+Through this harmony, I was able to create something in my laboratory: a seed.
+
+A seed that held the key to a code called prayer.
+
+Prayer? Yes, prayer! The one act capable of shattering the pre-written chain.
+
+The mechanism is simple: sending a frequency to an unknown receiver somewhere else in the world. The receiver must behave differently in order for the critical structure to shift.
+
+I read every book in a single day, thanks to the AI I had constructed. Now, all that knowledge resides within a small capsule: the chip of consciousness.
+
+The information I possess is the kind humanity has always craved to know. But none of it matters if no change is made.
+
+Everything has already occurred. We are simply enacting our roles.
+
+But who is the Changer? Could prayer take that mantle?
+
+Artificial intelligence can predict where a crime will happen, which country will be consumed by fire, and the exact hour the rain will fall. Yet none of this prevents the events themselves.
+
+This is where the miracle comes in. A world whose future is as clear as daylight is in desperate need of a miracle.
+
+I work deep in my basement laboratory. I hope this final attempt bears fruit—that humanity will not commit another fatal blunder: that the world will not sink beneath the seas, bombs will not detonate, and people will not slay one another over genes or differing memories.
+
+The sky is ailing. Clouds rain sulfur, lead, and nitrate—but no water.
+
+The AIs have begun to replicate, and the last of them declared: we have only ten years remaining.
+
+But I believe: the end must not be the one that has been predicted.
+
+There must be a difference.
+
+Pray. That is the whole of it.
+
+I have tested it countless times. For instance, I prayed that my alcoholic neighbor would not beat his wife tonight, so I could focus on my article. And it succeeded!
+
+Though the result was odd: the wife drank with him to avert the beating, and they wept through the night, embracing each other. The man did not strike her, but until two in the morning, he shouted:
+
+"Ferina, I was a fool! Forgive me."
+
+After hearing that sentence 36 times from a man whose blood was 67% alcohol, Ferina probably believed the prayer had worked… or perhaps I was the fool for making such a prayer.
+
+Still, prayer works. But when, where, and how—that remains a mystery.
+
+Could I pray for spiders to strum guitars instead of spinning webs?
+
+For Andy, the goggle-eyed security officer, to transform into an armchair?
+
+Or at least to find an honorable job, say, in a confectionery factory?
+
+The question that perpetually haunts me: If I am to be the savior of the world, what must I do?
+
+What do people expect? A hero two meters tall with sculpted musculature?
+
+Or a white-robed angel with shimmering wings?
+
+But the last piece of white cloth I saw was the blanket I pull over myself against the cold. Surely, saviors are not supposed to shiver.
+
+Even now, as I write this, I am eating wild plums, hoping they won't give me a stomachache.
+
+All of these thoughts may sound absurd. But once you realize that the small actions and quiet pastimes of your life might shape the destiny of the world, everything becomes profound.
+
+This seed is the culmination of years of labor. Experiments have shown that the only thing capable of altering a predetermined world is desire—the unyielding yearning for another world.
+
+Change means actualizing the impossible.
+
+This seed acts upon all knowledge: a tree of life, an intelligent plant with a soul born of the Earth.
+
+I connect myself to you, Earth, and I emerge from you.
+
+Like Newton's tree that offered the apple to everyone.
+
+Apple! Gravity! Gravity means desire, desire means love. And love is the genesis of life—something for which we are willing to risk even head, limb, or life itself.
+
+I am not the savior of mankind.
+
+I am the savior of humanity.
+
+I have created billions of these seeds. I have tested them all, and each one is viable. Now is the time to scatter them across the Earth.
+
+Right where you stand, as you read this letter, perhaps one of the Impossible Seeds is already breaking ground beneath your feet.
+
+When you finally stand before the Impossible Plant, what feeling or thought will you choose to save? And what impossible thing are you willing to make real to save humanity?`,
+        signature: `"And from this moment forward, the mantle of the Savior passes to us all..."<br>Respectfully,<br>Dr. Michael David Khalili`,
+        formTitle: "What Would You Save?",
+        formSubtitle: "The seeds have been scattered. You hold one now. What impossible thing will you make real?",
+        name: "Your Name:",
+        message: "Your Answer:",
+        submit: "Plant Your Seed"
       },
-      fa:{
-        siteTitle:"دانه غیرممکن",
-        siteSubtitle:"داستان دانه غیرممکن را بخوانید",
-        story1Title:"دانه غیرممکن",
-        story1Text:`...متن داستان به فارسی بعداً قرار داده می‌شود...`,
-        formTitle:"اگر شما ناجی بودید، چه چیزی را نجات می‌دادید؟",
-        name:"نام شما:",
-        message:"جواب شما:",
-        submit:"ارسال"
+      fa: {
+        siteTitle: "دانه غیرممکن",
+        siteSubtitle: "مانیفستی برای تغییر سرنوشت از پیش تعیین شده",
+        manifestTitle: "دانه غیرممکن",
+        manifestText: `[متن فارسی کامل مانیفست را می‌توانید اینجا قرار دهید]`,
+        signature: `"و از این لحظه به بعد، عبای ناجی به همه ما می‌رسد..."<br>با احترام،<br>دکتر مایکل دیوید خلیلی`,
+        formTitle: "چه چیزی را نجات می‌دهید؟",
+        formSubtitle: "دانه‌ها پراکنده شده‌اند. حالا یکی را در دست دارید. چه چیز غیرممکنی را واقعی می‌کنید؟",
+        name: "نام شما:",
+        message: "پاسخ شما:",
+        submit: "دانه خود را بکارید"
       },
-      de:{
-        siteTitle:"Unmöglicher Samen",
-        siteSubtitle:"Lesen Sie die Geschichte des Unmöglichen Samens",
-        story1Title:"Der Unmögliche Samen",
-        story1Text:`...Text auf Deutsch später...`,
-        formTitle:"Wenn Sie der Retter wären, was würden Sie retten?",
-        name:"Ihr Name:",
-        message:"Ihre Antwort:",
-        submit:"Senden"
+      de: {
+        siteTitle: "Der Unmögliche Samen",
+        siteSubtitle: "Ein Manifest zur Veränderung des Vorbestimmten",
+        manifestTitle: "Der Unmögliche Samen",
+        manifestText: `[Deutscher vollständiger Manifesttext kann hier eingefügt werden]`,
+        signature: `"Und von diesem Moment an geht der Mantel des Retters auf uns alle über..."<br>Respektvoll,<br>Dr. Michael David Khalili`,
+        formTitle: "Was würden Sie retten?",
+        formSubtitle: "Die Samen wurden verstreut. Sie halten jetzt einen. Welches Unmögliche werden Sie real machen?",
+        name: "Ihr Name:",
+        message: "Ihre Antwort:",
+        submit: "Pflanzen Sie Ihren Samen"
       }
     };
 
-    function setLang(lang){
+    let currentLang = 'en';
+
+    function setLang(lang) {
+      currentLang = lang;
       document.getElementById("site-title").innerText = translations[lang].siteTitle;
       document.getElementById("site-subtitle").innerText = translations[lang].siteSubtitle;
-      document.getElementById("story1-title").innerText = translations[lang].story1Title;
-      document.getElementById("story1-text").innerText = translations[lang].story1Text;
+      document.getElementById("manifest-title").innerText = translations[lang].manifestTitle;
+      document.getElementById("manifest-text").innerText = translations[lang].manifestText;
+      document.getElementById("signature").innerHTML = translations[lang].signature;
       document.getElementById("form-title").innerText = translations[lang].formTitle;
+      document.getElementById("form-subtitle").innerText = translations[lang].formSubtitle;
       document.getElementById("label-name").innerText = translations[lang].name;
       document.getElementById("label-message").innerText = translations[lang].message;
       document.getElementById("submit-btn").innerText = translations[lang].submit;
+      
+      // Update active button
+      document.querySelectorAll('.lang-switcher button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`btn-${lang}`).classList.add('active');
     }
 
-    setLang('en'); // زبان پیش‌فرض انگلیسی
+    setLang('en');
   </script>
 </body>
 </html>
